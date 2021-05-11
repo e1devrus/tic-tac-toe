@@ -1,7 +1,11 @@
+import { createStore } from './store/store';
+import { gameReducer } from './store/reducers';
+
 import { UIController } from './controllers/UIController';
 import './style/style.css';
 
 document.addEventListener('DOMContentLoaded', () => {
-  const controller = new UIController();
+  const store = createStore({ reducer: gameReducer });
+  const controller = new UIController(store);
   controller.init('body');
 });

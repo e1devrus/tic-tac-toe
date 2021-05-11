@@ -1,4 +1,8 @@
 export class UIController {
+  constructor(store) {
+    this.store = store;
+  }
+
   init(selector) {
     this.selector = selector;
     this.gameField = document.querySelector(selector);
