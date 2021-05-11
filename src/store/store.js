@@ -24,17 +24,26 @@ const initialState = {
   winner: null,
 };
 
-export const createStore = ({ state = initialState, reducer }) => ({
-  state,
-  callbacks: [],
-  subscribe(callback) {
-    this.callbacks.push(callback);
-  },
-  notifySubscribers() {
-    this.callback.forEach((callback) => callback(this.state));
-  },
-  dispatch(action) {
-    this.state = reducer(this.state, action);
-    this.notifySubscribers();
-  },
-});
+export const createStore = (reducer) => {
+  let state = initialState;
+
+  const callbacks = [];
+
+  const notifySubscribers = () => {
+    callbacks.forEach((callback) => callback(state));
+  };
+
+  return ({
+    dispatch(action) {
+      state = reducer(state, action);
+      notifySubscribers();
+    },
+    subscribe(callback) {
+      callbacks.push(callback);
+      callback(state);
+    },
+    getState() {
+      return state;
+    },
+  });
+};
