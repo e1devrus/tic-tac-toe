@@ -1,26 +1,37 @@
 import { cloneDeep } from 'lodash';
 import { CellStateEnum, PlayerEnum } from './store';
 
-export const MAKE_MOVE = 'MAKE_MOVE';
 export const SET_WINNER = 'SET_WINNER';
 export const START_NEW_GAME = 'START_NEW_GAME';
+export const SET_CELL_VALUE = 'SET_CELL_VALUE';
+export const SET_CURRENT_PLAYER = 'SET_PLAYER';
 
 export const gameReducer = (state, action) => {
   switch (action.type) {
-    case MAKE_MOVE:
+    case SET_CELL_VALUE:
       const {
-        x, y, value, nextPlayer,
+        x, y, value,
       } = action.payload;
       const gameField = cloneDeep(state.gameField);
       gameField[y][x] = value;
+
       return {
         ...state,
         gameField,
-        currentPlayer: nextPlayer,
+      };
+    case SET_CURRENT_PLAYER:
+      const {
+        player,
+      } = action.payload;
+
+      return {
+        ...state,
+        currentPlayer: player,
       };
 
     case SET_WINNER:
       const { winner } = action.payload;
+
       return {
         ...state,
         winner,

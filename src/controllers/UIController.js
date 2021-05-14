@@ -1,10 +1,11 @@
 import { isEqual } from 'lodash';
-import { START_NEW_GAME } from '../store/reducers';
-import { PlayerEnum } from '../store/store';
+import { GameService } from '../services/gameService';
+import { CellStateEnum, PlayerEnum } from '../store/store';
 
 export class UIController {
   constructor(store) {
     this.store = store;
+    this.gameService = new GameService(store);
   }
 
   init(selector) {
@@ -17,21 +18,21 @@ export class UIController {
   handleStateChange(newState) {
     const { gameField, currentPlayer, winner } = newState;
     // первая инициализация стейта
-    if (!this.currentState) {
-      this.currentState = newState;
+    if (!this.state) {
+      this.state = newState;
       this.renderGameField(gameField);
       this.renderNotification(currentPlayer, winner);
     } else {
-      if (!isEqual(this.currentState.gameField, gameField)) {
+      if (!isEqual(this.state.gameField, gameField)) {
         this.renderGameField(gameField);
       }
 
-      if (this.currentState.currentPlayer !== currentPlayer
-         || this.currentState.winner !== winner) {
+      if (this.state.currentPlayer !== currentPlayer
+         || this.state.winner !== winner) {
         this.renderNotification(currentPlayer, winner);
       }
 
-      this.currentState = newState;
+      this.state = newState;
     }
   }
 
@@ -40,13 +41,16 @@ export class UIController {
     grid.innerHTML = '';
 
     const fragment = document.createDocumentFragment();
-    gameField.forEach((row, rowIndex) => {
-      row.forEach((value, cellIndex) => {
+    gameField.forEach((row, y) => {
+      row.forEach((value, x) => {
         const cellElement = document.createElement('div');
-        cellElement.setAttribute('x', cellIndex);
-        cellElement.setAttribute('y', rowIndex);
-        cellElement.setAttribute('value', value);
         cellElement.className = 'cell';
+        cellElement.addEventListener('click', () => {
+          this.gameService.makeMove(x, y, this.state.currentPlayer);
+        });
+        if (value !== CellStateEnum.empty) {
+          cellElement.textContent = value === CellStateEnum.cross ? 'x' : 'o';
+        }
         fragment.append(cellElement);
       });
     });
@@ -55,7 +59,7 @@ export class UIController {
   }
 
   renderNotification(currentPlayer, winner) {
-    const notification = document.quesrySelectoe('.notification');
+    const notification = document.querySelector('.notification');
 
     let notificationText = '';
 
@@ -81,9 +85,7 @@ export class UIController {
     const newGameBtn = document.createElement('button');
     newGameBtn.className = 'new-game-btn';
     newGameBtn.textContent = 'Новая игра';
-    newGameBtn.addEventListener('click', () => this.store.dispatch({
-      type: START_NEW_GAME,
-    }));
+    newGameBtn.addEventListener('click', () => this.gameService.startNewGame());
 
     container.appendChild(grid);
     container.appendChild(notification);
