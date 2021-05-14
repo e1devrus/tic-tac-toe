@@ -26,9 +26,18 @@
 }
 
 .cell {
+  display: flex;
+  justify-content: center;
+
   border: 1px solid #706f6f;
 
+  font-size: 64px;
+
   cursor: pointer;
+}
+
+.cell-inactive {
+  background: #d8d2d2;
 }
 
 .notification {
@@ -40,7 +49,7 @@
 }
 
 .new-game-btn {
-  width: 100px;
+  width: 150px;
   height: 40px;
   line-height: 40px;
 
