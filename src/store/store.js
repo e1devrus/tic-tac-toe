@@ -48,6 +48,8 @@ export const createStore = (reducer) => {
     },
     subscribe(callback) {
       callbacks.push(callback);
+      // здесь я сразу вызываю колбэк, т.к. я не придумал лучше способа,
+      // как именно провести первый рендер компонента
       callback(state);
     },
     getState() {

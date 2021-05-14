@@ -12,7 +12,7 @@ export class GameService {
     this.store.subscribe((state) => {
       this.state = state;
       if (state.gameState !== GameStateEnum.FINISHED) {
-        this.calculateGamePosition();
+        this.processGamePosition();
       }
     });
   }
@@ -25,10 +25,10 @@ export class GameService {
 
   handleCellClick(x, y, player) {
     if (this.state.gameState === GameStateEnum.STARTED
-        && this.state.gameField[y][x] === CellStateEnum.empty
-        && !this.state.winner) {
+        && this.state.gameField[y][x] === CellStateEnum.empty) {
       const nextPlayer = player === PlayerEnum.cross ? PlayerEnum.circle : PlayerEnum.cross;
       const value = player === PlayerEnum.cross ? CellStateEnum.cross : CellStateEnum.circle;
+
       this.store.dispatch({
         type: SET_CELL_VALUE,
         payload: {
@@ -47,8 +47,9 @@ export class GameService {
     }
   }
 
-  calculateGamePosition() {
+  processGamePosition() {
     this.checkForWinner();
+
     if (!this.state.winner) {
       const isGameFieldFull = flatten(this.state.gameField)
         .every((cellValue) => cellValue !== CellStateEnum.empty);

@@ -15,18 +15,16 @@ export class UIController {
   }
 
   handleStateChange(newState) {
-    const { gameField, currentPlayer, winner } = newState;
-
     this.state = newState;
-    this.renderGameField(gameField);
-    this.renderNotification(currentPlayer, winner);
+    this.renderGameField();
+    this.renderNotification();
   }
 
-  renderGameField(gameField) {
+  renderGameField() {
     const grid = document.querySelector('.grid');
     grid.innerHTML = '';
 
-    const { gameState } = this.state;
+    const { gameState, gameField, currentPlayer } = this.state;
 
     const fragment = document.createDocumentFragment();
     gameField.forEach((row, y) => {
@@ -41,7 +39,7 @@ export class UIController {
         }
 
         cellElement.addEventListener('click', () => {
-          this.gameService.handleCellClick(x, y, this.state.currentPlayer);
+          this.gameService.handleCellClick(x, y, currentPlayer);
         });
         fragment.append(cellElement);
       });
@@ -50,7 +48,9 @@ export class UIController {
     grid.append(fragment);
   }
 
-  renderNotification(currentPlayer, winner) {
+  renderNotification() {
+    const { currentPlayer, winner } = this.state;
+
     const notification = document.querySelector('.notification');
 
     let notificationText = '';
