@@ -9,10 +9,17 @@ export const PlayerEnum = Object.freeze({
   circle: 'circle',
 });
 
+export const GameStateEnum = Object.freeze({
+  NOT_STARTED: 'NOT_STARTED',
+  STARTED: 'STARTED',
+  FINISHED: 'FINISHED',
+});
+
 /**
  * gameField: двумерный массив игрового поля, содержащий текущее состояние клеток
  * currentPlayer: кто сейчас ходит - CurrentPlayerEnum | null
  * winner: кто победил - CurrentPlayerEnum | null
+ * gameState - текущее состояния игры - GameStateEnum
  */
 const initialState = {
   gameField: [
@@ -22,6 +29,7 @@ const initialState = {
   ],
   currentPlayer: null,
   winner: null,
+  gameState: GameStateEnum.NOT_STARTED,
 };
 
 export const createStore = (reducer) => {

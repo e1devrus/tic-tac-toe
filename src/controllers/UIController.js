@@ -1,6 +1,5 @@
-import { isEqual } from 'lodash';
 import { GameService } from '../services/gameService';
-import { CellStateEnum, PlayerEnum } from '../store/store';
+import { CellStateEnum, GameStateEnum, PlayerEnum } from '../store/store';
 
 export class UIController {
   constructor(store) {
@@ -17,40 +16,33 @@ export class UIController {
 
   handleStateChange(newState) {
     const { gameField, currentPlayer, winner } = newState;
-    // первая инициализация стейта
-    if (!this.state) {
-      this.state = newState;
-      this.renderGameField(gameField);
-      this.renderNotification(currentPlayer, winner);
-    } else {
-      if (!isEqual(this.state.gameField, gameField)) {
-        this.renderGameField(gameField);
-      }
 
-      if (this.state.currentPlayer !== currentPlayer
-         || this.state.winner !== winner) {
-        this.renderNotification(currentPlayer, winner);
-      }
-
-      this.state = newState;
-    }
+    this.state = newState;
+    this.renderGameField(gameField);
+    this.renderNotification(currentPlayer, winner);
   }
 
   renderGameField(gameField) {
     const grid = document.querySelector('.grid');
     grid.innerHTML = '';
 
+    const { gameState } = this.state;
+
     const fragment = document.createDocumentFragment();
     gameField.forEach((row, y) => {
       row.forEach((value, x) => {
         const cellElement = document.createElement('div');
-        cellElement.className = 'cell';
-        cellElement.addEventListener('click', () => {
-          this.gameService.makeMove(x, y, this.state.currentPlayer);
-        });
+        cellElement.className = gameState === GameStateEnum.NOT_STARTED ? 'cell-inactive' : 'cell';
+
         if (value !== CellStateEnum.empty) {
           cellElement.textContent = value === CellStateEnum.cross ? 'x' : 'o';
+        } else {
+          cellElement.classList.add('cell-empty');
         }
+
+        cellElement.addEventListener('click', () => {
+          this.gameService.handleCellClick(x, y, this.state.currentPlayer);
+        });
         fragment.append(cellElement);
       });
     });
@@ -63,10 +55,19 @@ export class UIController {
 
     let notificationText = '';
 
-    if (currentPlayer) {
-      notificationText = currentPlayer === PlayerEnum.cross ? 'Ходит крестик' : 'Ходит нолик';
-    } else if (winner) {
-      notificationText = winner === PlayerEnum.cross ? 'Победил крестик!' : 'Победил нолик!';
+    switch (this.state.gameState) {
+      case GameStateEnum.STARTED:
+        notificationText = currentPlayer === PlayerEnum.cross ? 'Ходит крестик' : 'Ходит нолик';
+        break;
+      case GameStateEnum.FINISHED:
+        if (!winner) {
+          notificationText = 'Победила дружба!';
+        } else {
+          notificationText = winner === PlayerEnum.cross ? 'Победил крестик!' : 'Победил нолик!';
+        }
+        break;
+      default:
+        break;
     }
 
     notification.textContent = notificationText;

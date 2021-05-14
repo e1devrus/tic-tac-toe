@@ -34,9 +34,16 @@
   font-size: 64px;
 
   cursor: pointer;
+
+  user-select: none;
 }
 
-.cell-inactive {
+.cell-empty:hover {
+  background: #ece9e9;
+}
+
+.cell-inactive,
+.cell-inactive:hover {
   background: #d8d2d2;
 }
 

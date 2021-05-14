@@ -1,16 +1,18 @@
+import { flatten } from 'lodash';
 import {
+  END_GAME,
   SET_CELL_VALUE,
   SET_CURRENT_PLAYER, SET_WINNER, START_NEW_GAME,
 } from '../store/reducers';
-import { CellStateEnum, PlayerEnum } from '../store/store';
+import { CellStateEnum, GameStateEnum, PlayerEnum } from '../store/store';
 
 export class GameService {
   constructor(store) {
     this.store = store;
     this.store.subscribe((state) => {
       this.state = state;
-      if (!state.winner) {
-        this.checkForWin();
+      if (state.gameState !== GameStateEnum.FINISHED) {
+        this.calculateGamePosition();
       }
     });
   }
@@ -19,20 +21,12 @@ export class GameService {
     this.store.dispatch({
       type: START_NEW_GAME,
     });
-
-    this.store.dispatch({
-      type: SET_CURRENT_PLAYER,
-      payload: {
-        player: PlayerEnum.cross,
-      },
-    });
   }
 
-  makeMove(x, y, player) {
-    if (!this.state.currentPlayer) {
-      this.startNewGame();
-    }
-    if (this.state.gameField[y][x] === CellStateEnum.empty && !this.state.winner) {
+  handleCellClick(x, y, player) {
+    if (this.state.gameState === GameStateEnum.STARTED
+        && this.state.gameField[y][x] === CellStateEnum.empty
+        && !this.state.winner) {
       const nextPlayer = player === PlayerEnum.cross ? PlayerEnum.circle : PlayerEnum.cross;
       const value = player === PlayerEnum.cross ? CellStateEnum.cross : CellStateEnum.circle;
       this.store.dispatch({
@@ -53,9 +47,22 @@ export class GameService {
     }
   }
 
-  checkForWin() {
+  calculateGamePosition() {
+    this.checkForWinner();
+    if (!this.state.winner) {
+      const isGameFieldFull = flatten(this.state.gameField)
+        .every((cellValue) => cellValue !== CellStateEnum.empty);
+      if (isGameFieldFull) {
+        this.store.dispatch({
+          type: END_GAME,
+        });
+      }
+    }
+  }
+
+  checkForWinner() {
     // eslint-disable-next-line max-len
-    const requiredValue = this.state.currentPlayer === PlayerEnum.cross ? CellStateEnum.circle : CellStateEnum.cross;
+    const requiredValue = this.state.currentPlayer === PlayerEnum.cross ? CellStateEnum.cross : CellStateEnum.circle;
 
     let isCurrentPlayerWinner = false;
 

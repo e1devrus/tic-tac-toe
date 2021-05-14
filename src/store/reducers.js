@@ -1,10 +1,11 @@
 import { cloneDeep } from 'lodash';
-import { CellStateEnum, PlayerEnum } from './store';
+import { CellStateEnum, GameStateEnum, PlayerEnum } from './store';
 
 export const SET_WINNER = 'SET_WINNER';
 export const START_NEW_GAME = 'START_NEW_GAME';
 export const SET_CELL_VALUE = 'SET_CELL_VALUE';
 export const SET_CURRENT_PLAYER = 'SET_PLAYER';
+export const END_GAME = 'END_GAME';
 
 export const gameReducer = (state, action) => {
   switch (action.type) {
@@ -36,6 +37,7 @@ export const gameReducer = (state, action) => {
         ...state,
         winner,
         currentPlayer: null,
+        gameState: GameStateEnum.FINISHED,
       };
 
     case START_NEW_GAME:
@@ -48,6 +50,12 @@ export const gameReducer = (state, action) => {
         ],
         currentPlayer: PlayerEnum.cross,
         winner: null,
+        gameState: GameStateEnum.STARTED,
+      };
+    case END_GAME:
+      return {
+        ...state,
+        gameState: GameStateEnum.FINISHED,
       };
     default:
       return state;
