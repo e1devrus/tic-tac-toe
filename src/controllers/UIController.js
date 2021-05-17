@@ -1,6 +1,9 @@
 import { GameService } from '../services/gameService';
 import { CellStateEnum, GameStateEnum, PlayerEnum } from '../store/store';
 
+import circle from '../static/img/circle.png';
+import cross from '../static/img/cross.png';
+
 export class UIController {
   constructor(store) {
     this.store = store;
@@ -24,6 +27,15 @@ export class UIController {
     const grid = document.querySelector('.grid');
     grid.innerHTML = '';
 
+    const { fieldLength, fieldWidth } = this.state;
+    const biggestSide = fieldLength > fieldWidth ? fieldLength : fieldWidth;
+
+    const columnsTemplate = `repeat(${fieldWidth}, calc(30vw / ${biggestSide}))`;
+    const rowsTemplate = `repeat(${fieldLength}, calc(30vw / ${biggestSide}))`;
+
+    grid.style.gridTemplateColumns = columnsTemplate;
+    grid.style.gridTemplateRows = rowsTemplate;
+
     const { gameState, gameField, currentPlayer } = this.state;
 
     const fragment = document.createDocumentFragment();
@@ -33,7 +45,7 @@ export class UIController {
         cellElement.className = gameState === GameStateEnum.NOT_STARTED ? 'cell-inactive' : 'cell';
 
         if (value !== CellStateEnum.empty) {
-          cellElement.textContent = value === CellStateEnum.cross ? 'x' : 'o';
+          cellElement.style.backgroundImage = `url(${value === CellStateEnum.cross ? cross : circle})`;
         } else {
           cellElement.classList.add('cell-empty');
         }

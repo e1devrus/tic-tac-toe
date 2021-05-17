@@ -20,18 +20,16 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 100px 100px 100px;
-  grid-template-rows: 100px 100px 100px;
-  grid-gap: 10px;
+  grid-gap: 5px;
 }
 
 .cell {
-  display: flex;
-  justify-content: center;
-
   border: 1px solid #706f6f;
+  background-size: 75% 75%;
+  background-repeat: no-repeat;
+  background-position: center center;
 
-  font-size: 64px;
+  text-align: center;
 
   cursor: pointer;
 

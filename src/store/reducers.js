@@ -1,4 +1,5 @@
 import { cloneDeep } from 'lodash';
+import { generateFieldTemplate } from '../utils/field';
 import { CellStateEnum, GameStateEnum, PlayerEnum } from './store';
 
 export const SET_WINNER = 'SET_WINNER';
@@ -20,6 +21,7 @@ export const gameReducer = (state, action) => {
         ...state,
         gameField,
       };
+
     case SET_CURRENT_PLAYER:
       const {
         player,
@@ -41,22 +43,23 @@ export const gameReducer = (state, action) => {
       };
 
     case START_NEW_GAME:
+      const {
+        width, length,
+      } = action.payload;
       return {
         ...state,
-        gameField: [
-          [CellStateEnum.empty, CellStateEnum.empty, CellStateEnum.empty],
-          [CellStateEnum.empty, CellStateEnum.empty, CellStateEnum.empty],
-          [CellStateEnum.empty, CellStateEnum.empty, CellStateEnum.empty],
-        ],
+        gameField: generateFieldTemplate(width, length, CellStateEnum.empty),
         currentPlayer: PlayerEnum.cross,
         winner: null,
         gameState: GameStateEnum.STARTED,
       };
+
     case END_GAME:
       return {
         ...state,
         gameState: GameStateEnum.FINISHED,
       };
+
     default:
       return state;
   }

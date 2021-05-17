@@ -18,8 +18,15 @@ export class GameService {
   }
 
   startNewGame() {
+    const {
+      fieldWidth, fieldLength,
+    } = this.state;
     this.store.dispatch({
       type: START_NEW_GAME,
+      payload: {
+        width: fieldWidth,
+        length: fieldLength,
+      },
     });
   }
 
@@ -49,7 +56,6 @@ export class GameService {
 
   processGamePosition() {
     this.checkForWinner();
-
     if (!this.state.winner) {
       const isGameFieldFull = flatten(this.state.gameField)
         .every((cellValue) => cellValue !== CellStateEnum.empty);
@@ -63,41 +69,9 @@ export class GameService {
 
   checkForWinner() {
     // eslint-disable-next-line max-len
-    const requiredValue = this.state.currentPlayer === PlayerEnum.cross ? CellStateEnum.cross : CellStateEnum.circle;
+    // const requiredValue = this.state.currentPlayer === PlayerEnum.cross ? CellStateEnum.cross : CellStateEnum.circle;
 
-    let isCurrentPlayerWinner = false;
-
-    const { gameField } = this.state;
-
-    // проверяем столбцы
-    for (let i = 0; i < 3; i++) {
-      if (gameField[0][i] === requiredValue
-         && gameField[1][i] === requiredValue
-         && gameField[2][i] === requiredValue) {
-        isCurrentPlayerWinner = true;
-      }
-    }
-
-    // проверяем строки
-    for (let i = 0; i < 3; i++) {
-      if (gameField[i][0] === requiredValue
-         && gameField[i][1] === requiredValue
-         && gameField[i][2] === requiredValue) {
-        isCurrentPlayerWinner = true;
-      }
-    }
-
-    // проверяем диагонали
-    if (gameField[0][0] === requiredValue
-        && gameField[1][1] === requiredValue
-        && gameField[2][2] === requiredValue) {
-      isCurrentPlayerWinner = true;
-    }
-    if (gameField[0][2] === requiredValue
-        && gameField[1][1] === requiredValue
-        && gameField[2][0] === requiredValue) {
-      isCurrentPlayerWinner = true;
-    }
+    const isCurrentPlayerWinner = false;
 
     if (isCurrentPlayerWinner) {
       this.store.dispatch({

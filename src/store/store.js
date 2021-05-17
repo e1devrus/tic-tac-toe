@@ -1,3 +1,5 @@
+import { generateFieldTemplate } from '../utils/field';
+
 export const CellStateEnum = Object.freeze({
   cross: 'cross',
   circle: 'circle',
@@ -15,21 +17,26 @@ export const GameStateEnum = Object.freeze({
   FINISHED: 'FINISHED',
 });
 
+const DEFAULT_FIELD_LENGTH = 15;
+const DEFAULT_FIELD_WIDTH = 15;
+const DEFAULT_WINNING_LENGTH = 5;
+
 /**
  * gameField: двумерный массив игрового поля, содержащий текущее состояние клеток
  * currentPlayer: кто сейчас ходит - CurrentPlayerEnum | null
  * winner: кто победил - CurrentPlayerEnum | null
  * gameState - текущее состояния игры - GameStateEnum
+ * fieldSize - размер игрового поля
+ * winningLength - длина ряда, необходимая для победы
  */
 const initialState = {
-  gameField: [
-    [CellStateEnum.empty, CellStateEnum.empty, CellStateEnum.empty],
-    [CellStateEnum.empty, CellStateEnum.empty, CellStateEnum.empty],
-    [CellStateEnum.empty, CellStateEnum.empty, CellStateEnum.empty],
-  ],
   currentPlayer: null,
   winner: null,
   gameState: GameStateEnum.NOT_STARTED,
+  fieldLength: DEFAULT_FIELD_LENGTH,
+  fieldWidth: DEFAULT_FIELD_WIDTH,
+  winningLength: DEFAULT_WINNING_LENGTH,
+  gameField: generateFieldTemplate(DEFAULT_FIELD_WIDTH, DEFAULT_FIELD_LENGTH, CellStateEnum.empty),
 };
 
 export const createStore = (reducer) => {
