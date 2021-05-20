@@ -1,10 +1,13 @@
 import { flatten } from 'lodash';
+import { GameField } from '../entities/GameField';
 import {
   END_GAME,
   SET_CELL_VALUE,
   SET_CURRENT_PLAYER, SET_WINNER, START_NEW_GAME,
 } from '../store/reducers';
-import { CellStateEnum, GameStateEnum, PlayerEnum } from '../store/store';
+import {
+  CellStateEnum, GameStateEnum, PlayerEnum,
+} from '../store/store';
 
 export class GameService {
   constructor(store) {
@@ -19,20 +22,21 @@ export class GameService {
 
   startNewGame() {
     const {
-      fieldWidth, fieldLength,
+      fieldWidth, fieldLength, winningLength,
     } = this.state;
+    this.gameField = new GameField(fieldWidth, fieldLength, winningLength, CellStateEnum.empty);
     this.store.dispatch({
       type: START_NEW_GAME,
       payload: {
-        width: fieldWidth,
-        length: fieldLength,
+        field: this.gameField.getField(),
       },
     });
   }
 
   handleCellClick(x, y, player) {
-    if (this.state.gameState === GameStateEnum.STARTED
-        && this.state.gameField[y][x] === CellStateEnum.empty) {
+    const { gameState, gameField } = this.state;
+    if (gameState === GameStateEnum.STARTED
+        && gameField.getField()[y][x] === CellStateEnum.empty) {
       const nextPlayer = player === PlayerEnum.cross ? PlayerEnum.circle : PlayerEnum.cross;
       const value = player === PlayerEnum.cross ? CellStateEnum.cross : CellStateEnum.circle;
 
@@ -69,7 +73,6 @@ export class GameService {
 
   checkForWinner() {
     // eslint-disable-next-line max-len
-    // const requiredValue = this.state.currentPlayer === PlayerEnum.cross ? CellStateEnum.cross : CellStateEnum.circle;
 
     const isCurrentPlayerWinner = false;
 

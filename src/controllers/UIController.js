@@ -37,7 +37,6 @@ export class UIController {
     grid.style.gridTemplateRows = rowsTemplate;
 
     const { gameState, gameField, currentPlayer } = this.state;
-
     const fragment = document.createDocumentFragment();
     gameField.forEach((row, y) => {
       row.forEach((value, x) => {
