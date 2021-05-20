@@ -23,7 +23,6 @@ export const gameReducer = (state, action) => {
       const {
         line,
       } = action.payload;
-      console.log(line);
 
       return {
         ...state,

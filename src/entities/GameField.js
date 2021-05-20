@@ -25,7 +25,9 @@ export class GameField {
 
   safelyGetCellByCoords(x, y) {
     if (x < 0 || x >= this.fieldWidth || y < 0 || y >= this.fieldLength) {
-      return null;
+      return {
+        value: null,
+      };
     }
     return {
       x,
@@ -82,5 +84,107 @@ export class GameField {
       }
     }
     return lines;
+  }
+
+  isCreatingFork(x, y, value) {
+    // 3x3 вилки
+    const topPiece = [
+      this.safelyGetCellByCoords(x, y - 1),
+      this.safelyGetCellByCoords(x, y - 2),
+      this.safelyGetCellByCoords(x, y - 3),
+    ];
+    const topRightPiece = [
+      this.safelyGetCellByCoords(x + 1, y - 1),
+      this.safelyGetCellByCoords(x + 2, y - 2),
+      this.safelyGetCellByCoords(x + 3, y - 3),
+    ];
+    const rightPiece = [
+      this.safelyGetCellByCoords(x + 1, y),
+      this.safelyGetCellByCoords(x + 2, y),
+      this.safelyGetCellByCoords(x + 3, y),
+    ];
+    const bottomRightPiece = [
+      this.safelyGetCellByCoords(x + 1, y + 1),
+      this.safelyGetCellByCoords(x + 2, y + 2),
+      this.safelyGetCellByCoords(x + 3, y + 3),
+    ];
+    const bottomPiece = [
+      this.safelyGetCellByCoords(x, y + 1),
+      this.safelyGetCellByCoords(x, y + 2),
+      this.safelyGetCellByCoords(x, y + 3),
+    ];
+    const bottomLeftPiece = [
+      this.safelyGetCellByCoords(x - 1, y + 1),
+      this.safelyGetCellByCoords(x - 2, y + 2),
+      this.safelyGetCellByCoords(x - 3, y + 3),
+    ];
+    const leftPiece = [
+      this.safelyGetCellByCoords(x - 1, y),
+      this.safelyGetCellByCoords(x - 2, y),
+      this.safelyGetCellByCoords(x - 3, y),
+    ];
+    const topLeftPiece = [
+      this.safelyGetCellByCoords(x - 1, y - 1),
+      this.safelyGetCellByCoords(x - 2, y - 2),
+      this.safelyGetCellByCoords(x - 3, y - 3),
+    ];
+    const horizontalPiece = [
+      this.safelyGetCellByCoords(x - 2, y),
+      this.safelyGetCellByCoords(x - 1, y),
+      this.safelyGetCellByCoords(x + 1, y),
+      this.safelyGetCellByCoords(x + 2, y),
+    ];
+    const verticalPiece = [
+      this.safelyGetCellByCoords(x, y - 2),
+      this.safelyGetCellByCoords(x, y - 1),
+      this.safelyGetCellByCoords(x, y + 1),
+      this.safelyGetCellByCoords(x, y + 2),
+    ];
+
+    let potentialForkPieces = [];
+
+    // если "вилку" формируют два противоположных "зубца", то на самом деле
+    // это не вилка, просто игрок собрал свои ходы в линию
+    // поэтому не добавляем противоположные зубцы,
+    // если они одновременно являются подходящими для вилки
+    if (!(this.isPossibleForkPiece(topPiece, value)
+            && this.isPossibleForkPiece(bottomPiece, value))) {
+      potentialForkPieces.push(topPiece);
+      potentialForkPieces.push(bottomPiece);
+    }
+    if (!(this.isPossibleForkPiece(leftPiece, value)
+            && this.isPossibleForkPiece(rightPiece, value))) {
+      potentialForkPieces.push(leftPiece);
+      potentialForkPieces.push(rightPiece);
+    }
+    if (!(this.isPossibleForkPiece(topLeftPiece, value)
+            && this.isPossibleForkPiece(bottomRightPiece, value))) {
+      potentialForkPieces.push(topLeftPiece);
+      potentialForkPieces.push(bottomRightPiece);
+    }
+    if (!(this.isPossibleForkPiece(topRightPiece, value)
+            && this.isPossibleForkPiece(bottomLeftPiece, value))) {
+      potentialForkPieces.push(topRightPiece);
+      potentialForkPieces.push(bottomLeftPiece);
+    }
+
+    potentialForkPieces = potentialForkPieces
+      .filter((piece) => this.isPossibleForkPiece(piece, value));
+
+    [horizontalPiece, verticalPiece].forEach((piece) => {
+      if (piece[0].value !== value
+        && piece[1].value === value
+        && piece[2].value === value
+        && piece[3].value !== value) {
+        potentialForkPieces.push(piece);
+      }
+    });
+
+    return potentialForkPieces.length > 1;
+  }
+
+  isPossibleForkPiece(piece, value) {
+    return piece[piece.length - 1] !== value
+        && piece.slice(0, -1).every((cell) => cell.value === value);
   }
 }

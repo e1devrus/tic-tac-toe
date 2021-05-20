@@ -39,23 +39,31 @@ export class GameService {
       const nextPlayer = player === PlayerEnum.cross ? PlayerEnum.circle : PlayerEnum.cross;
       const value = player === PlayerEnum.cross ? CellStateEnum.cross : CellStateEnum.circle;
 
-      const newField = this.gameField.setCellValue(x, y, value);
+      const isCreatingFork = player === PlayerEnum.cross
+        ? this.gameField.isCreatingFork(x, y, value)
+        : false;
 
-      this.store.dispatch({
-        type: SET_FIELD,
-        payload: {
-          newField,
-        },
-      });
+      if (!isCreatingFork) {
+        const newField = this.gameField.setCellValue(x, y, value);
 
-      this.checkForWinner(x, y, value);
+        this.store.dispatch({
+          type: SET_FIELD,
+          payload: {
+            newField,
+          },
+        });
 
-      this.store.dispatch({
-        type: SET_CURRENT_PLAYER,
-        payload: {
-          player: nextPlayer,
-        },
-      });
+        this.checkForWinner(x, y, value);
+
+        this.store.dispatch({
+          type: SET_CURRENT_PLAYER,
+          payload: {
+            player: nextPlayer,
+          },
+        });
+      } else {
+        alert('Вилки 3 на 3 запрещены!');
+      }
     }
   }
 
