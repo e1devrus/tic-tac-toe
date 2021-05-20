@@ -43,6 +43,7 @@ const initialState = {
   fieldWidth: DEFAULT_FIELD_WIDTH,
   fieldLength: DEFAULT_FIELD_LENGTH,
   winningLength: DEFAULT_WINNING_LENGTH,
+  winningLine: [],
 };
 
 export const createStore = (reducer) => {

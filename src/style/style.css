@@ -45,6 +45,10 @@
   background: #d8d2d2;
 }
 
+.cell-winning {
+  border: 2px solid #8de938;
+}
+
 .notification {
   display: inline-block;
 

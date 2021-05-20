@@ -27,7 +27,7 @@ export class UIController {
     const grid = document.querySelector('.grid');
     grid.innerHTML = '';
 
-    const { fieldLength, fieldWidth } = this.state;
+    const { fieldLength, fieldWidth, winningLine } = this.state;
     const biggestSide = fieldLength > fieldWidth ? fieldLength : fieldWidth;
 
     const columnsTemplate = `repeat(${fieldWidth}, calc(30vw / ${biggestSide}))`;
@@ -48,6 +48,12 @@ export class UIController {
         } else {
           cellElement.classList.add('cell-empty');
         }
+
+        winningLine.forEach((cell) => {
+          if (cell.x === x && cell.y === y) {
+            cellElement.classList.add('cell-winning');
+          }
+        });
 
         cellElement.addEventListener('click', () => {
           this.gameService.handleCellClick(x, y, currentPlayer);
